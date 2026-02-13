@@ -1,7 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { Prisma, User as UserModel} from '../generated/prisma/client'
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards, ValidationPipe} from '@nestjs/common';
+import { User as UserModel} from '../generated/prisma/client'
 import { UserService } from './user.service';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -10,7 +12,7 @@ export class UserController {
 
     @Post()
     async signupUser(
-        @Body() userData: {email: string, name: string,  password: string}
+        @Body(new ValidationPipe()) userData: CreateUserDto
     ): Promise<UserModel> {
         return this.userService.createUser(userData);
     }
@@ -24,25 +26,25 @@ export class UserController {
     @UseGuards(AuthGuard)
     @Get(':id')
     async getUserById(
-        @Param('id') id: string
+        @Param('id', ParseIntPipe) id: number
     ): Promise<UserModel | null> {
-        return this.userService.user({id: Number(id)});
+        return this.userService.user({ id });
     }
 
     @UseGuards(AuthGuard)
     @Patch(':id')
     async updateUser(
-        @Body() userData: Prisma.UserUpdateInput,
-        @Param('id') id: string
+        @Body(new ValidationPipe) userData: UpdateUserDto,
+        @Param('id', ParseIntPipe) id: number
     ): Promise<UserModel> {
-        return this.userService.updateUser({where: {id: Number(id)}, data: userData});
+        return this.userService.updateUser({where: { id }, data: userData});
     }
     
     @UseGuards(AuthGuard)
     @Delete(':id')
     async deleteUser(
-        @Param('id') id: string,
+        @Param('id', ParseIntPipe) id: number,
     ): Promise<UserModel> {
-        return this.userService.deleteUser({id: Number(id)});
+        return this.userService.deleteUser({ id });
     }
 }

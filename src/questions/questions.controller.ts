@@ -1,4 +1,4 @@
-import { Request , Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Request , Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { QuestionsService } from './questions.service';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
@@ -24,19 +24,19 @@ export class QuestionsController {
 
   @Get(':id')
   @UseGuards(AuthGuard)
-  findOne(@Param('id') id: string) {
-    return this.questionsService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.questionsService.findOne(id);
   }
 
   @Patch(':id')
   @UseGuards(AuthGuard)
-  update(@Param('id') id: string, @Body() updateQuestionDto: UpdateQuestionDto) {
-    return this.questionsService.update(+id, updateQuestionDto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateQuestionDto: UpdateQuestionDto) {
+    return this.questionsService.update(id, updateQuestionDto);
   }
 
   @Delete(':id')
   @UseGuards(AuthGuard)
-  remove(@Param('id') id: string) {
-    return this.questionsService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.questionsService.remove(id);
   }
 }
