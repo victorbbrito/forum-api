@@ -14,6 +14,10 @@ export class UserService {
         });
     }
 
+    async users(){
+        return await this.prisma.user.findMany();
+    }
+
     async createUser(data: Prisma.UserCreateInput){
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(data.password, saltRounds);

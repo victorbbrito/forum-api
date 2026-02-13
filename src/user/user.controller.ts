@@ -15,6 +15,12 @@ export class UserController {
         return this.userService.createUser(userData);
     }
 
+    @Get()
+    @UseGuards(AuthGuard)
+    async getUsers(){
+        return await this.userService.users();
+    }
+
     @UseGuards(AuthGuard)
     @Get(':id')
     async getUserById(
@@ -24,10 +30,10 @@ export class UserController {
     }
 
     @UseGuards(AuthGuard)
-    @Patch()
+    @Patch(':id')
     async updateUser(
         @Body() userData: Prisma.UserUpdateInput,
-        @Param('id')id: string
+        @Param('id') id: string
     ): Promise<UserModel> {
         return this.userService.updateUser({where: {id: Number(id)}, data: userData});
     }
